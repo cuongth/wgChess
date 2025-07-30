@@ -1,2 +1,3 @@
 # wgChess
-Qt6 Chess program for desktop
+Qt6 Chess program for desktop using QWidget.
+
