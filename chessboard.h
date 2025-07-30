@@ -15,7 +15,7 @@ public:
     char data(int column, int rank) const;
     void setData(int columm, int rank, char value);
     void movePiece(int fromC, int fromR, int toC, int toR);
-    void setFen(QString &fen);
+    void setFen(const QString &fen);
 signals:
     void ranksChanged(int);
     void columnsChanged(int);

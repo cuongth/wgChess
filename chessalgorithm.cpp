@@ -1,7 +1,10 @@
 #include "chessalgorithm.h"
 #include "chessboard.h"
 
-ChessAlgorithm::ChessAlgorithm(QObject* parent) : QObject{parent} {}
+ChessAlgorithm::ChessAlgorithm(QObject* parent) : QObject{parent}
+{
+    m_board = nullptr;
+}
 
 ChessBoard *ChessAlgorithm::board() const
 {
@@ -11,6 +14,8 @@ ChessBoard *ChessAlgorithm::board() const
 void ChessAlgorithm::newGame()
 {
     setupBoard();
+    board()->setFen(
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 }
 
 void ChessAlgorithm::setupBoard()

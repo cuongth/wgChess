@@ -23,8 +23,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(wgChess
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        chessalgorithm.h chessalgorithm.cpp
         chessboard.h chessboard.cpp
+        chessalgorithm.h chessalgorithm.cpp
         chessview.h chessview.cpp
     )
 # Define target properties for Android with Qt 6 as:

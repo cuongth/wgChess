@@ -47,6 +47,17 @@ QRect ChessView::fieldRect(int c, int r) const
     return fRect.translated(offset+4, 0);
 }
 
+void ChessView::setPiece(char type, const QIcon &icon)
+{
+    m_pieces.insert(type, icon);
+    update();
+}
+
+QIcon ChessView::piece(char type) const
+{
+    return m_pieces.value(type, QIcon());
+}
+
 void ChessView::setFieldSize(QSize arg)
 {
     if (m_fieldSize == arg)
@@ -81,6 +92,14 @@ void ChessView::paintEvent(QPaintEvent *event)
             drawField(&painter, c, r);
             painter.restore();
         }
+
+    for (r = 1; r <= m_board->ranks(); ++r)
+        for (c = 1; c <= m_board->columns(); ++c)
+        {
+            painter.save();
+            drawPiece(&painter, c, r);
+            painter.restore();
+        }
 }
 
 // rank symbols on left egde.
@@ -113,4 +132,18 @@ void ChessView::drawField(QPainter *pt, int column, int rank)
     pt->setPen(palette().color(QPalette::Dark));
     pt->setBrush(fillColor);
     pt->drawRect(r);
+}
+
+void ChessView::drawPiece(QPainter *pt, int column, int rank)
+{
+    QRect r = fieldRect(column, rank);
+    char value = m_board->data(column, rank);
+    if (value != ' ')
+    {
+        QIcon icon = piece(value);
+        if (!icon.isNull())
+        {
+            icon.paint(pt, r, Qt::AlignCenter);
+        }
+    }
 }

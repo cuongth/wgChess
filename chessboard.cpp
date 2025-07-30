@@ -26,7 +26,7 @@ void ChessBoard::movePiece(int fromC, int fromR, int toC, int toR)
     setData(fromC, fromR, ' ');
 }
 
-void ChessBoard::setFen(QString &fen)
+void ChessBoard::setFen(const QString &fen)
 {
     int id = 0;
     int skip = 0;
