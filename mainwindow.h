@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "chessview.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -19,10 +20,14 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
+public slots:
+    void viewClicked(const QPoint& field);
 protected:
     Ui::MainWindow* ui;
 private:
     ChessView *m_view;
     ChessAlgorithm *m_algorithm;
+    QPoint m_clickPoint;
+    ChessView::FieldHighlight *m_selectedField;
 };
 #endif // MAINWINDOW_H

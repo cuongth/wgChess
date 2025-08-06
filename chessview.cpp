@@ -1,6 +1,7 @@
 #include "chessview.h"
 #include "chessboard.h"
 #include <QPainter>
+#include <QMouseEvent>
 
 ChessView::ChessView(QWidget* parent) : QWidget{parent}
 {}
@@ -13,8 +14,14 @@ void ChessView::setBoard(ChessBoard *board)
         m_board->disconnect(this);
     }
     m_board = board;
-    // TODO connect signals (to be done later)
-
+    // connect CheckBoard signals to update view
+    if (board)
+    {
+        connect(m_board, SIGNAL(dataChanged(int,int)),
+               this, SLOT(update()));
+        connect(m_board, SIGNAL(boardReset()),
+               this, SLOT(update()));
+    }
     updateGeometry(); // the layout needs to be recalculated
 }
 
@@ -58,6 +65,34 @@ QIcon ChessView::piece(char type) const
     return m_pieces.value(type, QIcon());
 }
 
+QPoint ChessView::fieldAt(const QPoint &pt) const
+{
+    if (!m_board) return QPoint();
+    const QSize fs = fieldSize();
+    int offset = fontMetrics().horizontalAdvance('M') + 4;
+    if (pt.x() < offset) return QPoint();
+    int c = (pt.x() - offset) / fs.width();
+    int r = pt.y() / fs.height();
+    if (c < 0 || c >= m_board->columns() ||
+        r < 0 || r >= m_board->ranks())
+    {
+        return QPoint();
+    }
+    return QPoint(c+1, m_board->ranks() - r);
+}
+
+void ChessView::addHighlight(Highlight *hl)
+{
+    m_highlights.append(hl);
+    update();
+}
+
+void ChessView::removeHighlight(Highlight *hl)
+{
+    m_highlights.removeOne(hl);
+    update();
+}
+
 void ChessView::setFieldSize(QSize arg)
 {
     if (m_fieldSize == arg)
@@ -73,18 +108,17 @@ void ChessView::paintEvent(QPaintEvent *event)
     if (!m_board) return;
     QPainter painter(this);
     int r = 0, c = 0;
+    painter.save();
     for (r = m_board->ranks(); r > 0; --r)
     {
-        painter.save();
         drawRank(&painter, r);
-        painter.restore();
     }
     for (c = 1; c <= m_board->columns(); ++c)
     {
-        painter.save();
         drawColumn(&painter, c);
-        painter.restore();
     }
+    painter.restore();
+
     for (r = 1; r <= m_board->ranks(); ++r)
         for (c = 1; c <= m_board->columns(); ++c)
         {
@@ -92,14 +126,17 @@ void ChessView::paintEvent(QPaintEvent *event)
             drawField(&painter, c, r);
             painter.restore();
         }
-
+    drawHighlight(&painter);
     for (r = 1; r <= m_board->ranks(); ++r)
         for (c = 1; c <= m_board->columns(); ++c)
-        {
-            painter.save();
             drawPiece(&painter, c, r);
-            painter.restore();
-        }
+}
+
+void ChessView::mouseReleaseEvent(QMouseEvent *event)
+{
+    QPoint pt = fieldAt(event->pos());
+    if (pt.isNull()) return;
+    emit clicked(pt);
 }
 
 // rank symbols on left egde.
@@ -144,6 +181,20 @@ void ChessView::drawPiece(QPainter *pt, int column, int rank)
         if (!icon.isNull())
         {
             icon.paint(pt, r, Qt::AlignCenter);
+        }
+    }
+}
+
+void ChessView::drawHighlight(QPainter *pt)
+{
+    for (int id = 0; id < highlightCount(); ++id)
+    {
+        Highlight* hl = highlight(id);
+        if (hl->type() == FieldHighlight::Type)
+        {
+            FieldHighlight *fhl = static_cast<FieldHighlight*>(hl);
+            QRect rect = fieldRect(fhl->column(), fhl->rank());
+            pt->fillRect(rect, fhl->color());
         }
     }
 }

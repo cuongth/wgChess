@@ -1,16 +1,18 @@
 #include "mainwindow.h"
-#include "chessview.h"
+#include "chessboard.h"
 #include "chessalgorithm.h"
 
 #include "./ui_mainwindow.h"
 #include <QLayout>
 
 MainWindow::MainWindow(QWidget* parent) :
-    QMainWindow(parent), ui(new Ui::MainWindow)
+    QMainWindow(parent), ui(new Ui::MainWindow), m_clickPoint{QPoint()}
 {
     ui->setupUi(this);
 
     m_view = new ChessView;
+    connect(m_view, &ChessView::clicked,
+            this, &MainWindow::viewClicked);
 
     m_view->setPiece('P', QIcon(":/pieces/Chess_plt45.svg")); // pawn
     m_view->setPiece('K', QIcon(":/pieces/Chess_klt45.svg")); // king
@@ -36,3 +38,30 @@ MainWindow::MainWindow(QWidget* parent) :
 }
 
 MainWindow::~MainWindow() { delete ui; }
+
+void MainWindow::viewClicked(const QPoint &field)
+{
+    if (m_clickPoint.isNull())
+    {
+        if (m_view->board()->data(field.x(), field.y()) != ' ')
+        {
+            m_clickPoint = field;
+            m_selectedField = new ChessView::FieldHighlight(
+                field.x(), field.y(), QColor(255, 0, 0, 50));
+            m_view->addHighlight(m_selectedField);
+        }
+    }
+    else
+    {
+        if (m_clickPoint != field)
+        {
+            m_view->board()->movePiece(
+                m_clickPoint.x(), m_clickPoint.y(),
+                field.x(), field.y());
+        }
+        m_clickPoint = QPoint();
+        m_view->removeHighlight(m_selectedField);
+        delete m_selectedField;
+        m_selectedField = nullptr;
+    }
+}
