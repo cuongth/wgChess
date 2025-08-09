@@ -12,5 +12,7 @@
         <file>pieces/Chess_ndt45.svg</file>
         <file>pieces/Chess_blt45.svg</file>
         <file>pieces/Chess_bdt45.svg</file>
+        <file>icons/newgame.png</file>
+        <file>icons/exit.png</file>
     </qresource>
 </RCC>
