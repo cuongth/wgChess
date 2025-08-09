@@ -93,6 +93,15 @@ void ChessView::removeHighlight(Highlight *hl)
     update();
 }
 
+void ChessView::removeAllHighlights()
+{
+    while (!m_highlights.isEmpty())
+    {
+        Highlight *hl = m_highlights.takeLast();
+        delete hl;
+    }
+}
+
 void ChessView::setFieldSize(QSize arg)
 {
     if (m_fieldSize == arg)
@@ -102,6 +111,7 @@ void ChessView::setFieldSize(QSize arg)
     updateGeometry();
 }
 
+// TODO: avoid re-rendering the whole widget unless really required.
 void ChessView::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)

@@ -48,6 +48,7 @@ public:
     QPoint fieldAt(const QPoint& pt) const;
     void addHighlight(Highlight *hl);
     void removeHighlight(Highlight *hl);
+    void removeAllHighlights();
     inline Highlight* highlight(int id)
     {
         return m_highlights.at(id);

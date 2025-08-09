@@ -20,8 +20,8 @@ void ChessBoard::setData(int column, int rank, char value)
 
 void ChessBoard::movePiece(int fromC, int fromR, int toC, int toR)
 {
-    // FIXME: what happens when moving empty piece i.e.
-    // data(fromC, fromR) == ' '
+    // cuongth: MainWindow::m_clickPoint guarantees that
+    // its data on board is NOT ' '
     setData(toC, toR, data(fromC, fromR));
     setData(fromC, fromR, ' ');
 }
